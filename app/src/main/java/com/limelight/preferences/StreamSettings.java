@@ -282,6 +282,9 @@ public class StreamSettings extends Activity {
                 PreferenceCategory category =
                         (PreferenceCategory) findPreference("category_onscreen_controls");
                 screen.removePreference(category);
+                PreferenceCategory wasdCategory =
+                        (PreferenceCategory) findPreference("category_wasd_mouse_controls");
+                screen.removePreference(wasdCategory);
             }
 
             // Hide remote desktop mouse mode on pre-Oreo (which doesn't have pointer capture)

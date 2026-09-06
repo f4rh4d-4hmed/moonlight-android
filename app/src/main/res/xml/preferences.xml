@@ -193,6 +193,59 @@
             />
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/category_wasd_mouse_settings"
+        android:key="category_wasd_mouse_controls">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="checkbox_show_wasd_mouse_controls"
+            android:summary="@string/summary_checkbox_show_wasd_mouse_controls"
+            android:title="@string/title_checkbox_show_wasd_mouse_controls" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="checkbox_show_wasd_mouse_controls"
+            android:key="checkbox_wasd_show_joystick"
+            android:summary="@string/summary_wasd_show_joystick"
+            android:title="@string/title_wasd_show_joystick" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="checkbox_show_wasd_mouse_controls"
+            android:key="checkbox_wasd_show_mouse_pad"
+            android:summary="@string/summary_wasd_show_mouse_pad"
+            android:title="@string/title_wasd_show_mouse_pad" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="checkbox_show_wasd_mouse_controls"
+            android:key="checkbox_wasd_show_left_click"
+            android:title="@string/title_wasd_show_left_click" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="checkbox_show_wasd_mouse_controls"
+            android:key="checkbox_wasd_show_middle_click"
+            android:title="@string/title_wasd_show_middle_click" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="checkbox_show_wasd_mouse_controls"
+            android:key="checkbox_wasd_show_right_click"
+            android:title="@string/title_wasd_show_right_click" />
+        <com.limelight.preferences.SeekBarPreference
+            android:key="seekbar_wasd_opacity"
+            android:dependency="checkbox_show_wasd_mouse_controls"
+            android:dialogMessage="@string/summary_wasd_opacity"
+            seekbar:min="0"
+            seekbar:step="1"
+            android:max="100"
+            android:defaultValue="90"
+            android:summary="@string/summary_wasd_opacity"
+            android:text="@string/suffix_osc_opacity"
+            android:title="@string/title_wasd_opacity" />
+        <com.limelight.preferences.ConfirmDeleteWasdOscPreference
+            android:title="@string/title_reset_wasd_osc"
+            android:summary="@string/summary_reset_wasd_osc"
+            android:dialogTitle="@string/dialog_title_reset_wasd_osc"
+            android:dialogMessage="@string/dialog_text_reset_wasd_osc"
+            android:positiveButtonText="@string/yes"
+            android:negativeButtonText="@string/no" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_host_settings">
         <CheckBoxPreference
             android:key="checkbox_enable_sops"

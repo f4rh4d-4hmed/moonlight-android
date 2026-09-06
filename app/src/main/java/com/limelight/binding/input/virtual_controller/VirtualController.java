@@ -20,7 +20,7 @@ import com.limelight.binding.input.ControllerHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VirtualController {
+public class VirtualController implements VirtualControllerContainer {
     public static class ControllerInputContext {
         public short inputMap = 0x0000;
         public byte leftTrigger = 0x00;
@@ -98,7 +98,8 @@ public class VirtualController {
 
     }
 
-    Handler getHandler() {
+    @Override
+    public Handler getHandler() {
         return handler;
     }
 

@@ -36,8 +36,13 @@ public abstract class VirtualControllerElement extends View {
     public static final int EID_LSB = 14;
     public static final int EID_RSB = 15;
     public static final int EID_GDB = 16;
+    public static final int EID_WASD_STICK = 101;
+    public static final int EID_MOUSE_PAD = 102;
+    public static final int EID_MOUSE_BTN_LEFT = 103;
+    public static final int EID_MOUSE_BTN_RIGHT = 104;
+    public static final int EID_MOUSE_BTN_MIDDLE = 105;
 
-    protected VirtualController virtualController;
+    protected VirtualControllerContainer virtualController;
     protected final int elementId;
 
     private final Paint paint = new Paint();
@@ -53,6 +58,9 @@ public abstract class VirtualControllerElement extends View {
 
     float position_pressed_x = 0;
     float position_pressed_y = 0;
+    private float initialPinchDistance = 0f;
+    private int pinchStartWidth = 0;
+    private int pinchStartHeight = 0;
 
     private enum Mode {
         Normal,
@@ -62,7 +70,7 @@ public abstract class VirtualControllerElement extends View {
 
     private Mode currentMode = Mode.Normal;
 
-    protected VirtualControllerElement(VirtualController controller, Context context, int elementId) {
+    protected VirtualControllerElement(VirtualControllerContainer controller, Context context, int elementId) {
         super(context);
 
         this.virtualController = controller;
@@ -222,18 +230,33 @@ public abstract class VirtualControllerElement extends View {
         alert.show();
     }
 
+    public int getElementId() {
+        return elementId;
+    }
+
+    public void setElementSize(int width, int height) {
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
+        layoutParams.width = Math.max(20, width);
+        layoutParams.height = Math.max(20, height);
+        requestLayout();
+    }
+
+    public void setElementPosition(int x, int y) {
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
+        layoutParams.leftMargin = Math.max(0, x);
+        layoutParams.topMargin = Math.max(0, y);
+        layoutParams.rightMargin = 0;
+        layoutParams.bottomMargin = 0;
+        requestLayout();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // Ignore secondary touches on controls
-        //
-        // NB: We can get an additional pointer down if the user touches a non-StreamView area
-        // while also touching an OSC control, even if that pointer down doesn't correspond to
-        // an area of the OSC control.
-        if (event.getActionIndex() != 0) {
-            return true;
-        }
-
         if (virtualController.getControllerMode() == VirtualController.ControllerMode.Active) {
+            // Ignore secondary touches on controls in Active mode
+            if (event.getActionIndex() != 0) {
+                return true;
+            }
             return onElementTouchEvent(event);
         }
 
@@ -243,6 +266,7 @@ public abstract class VirtualControllerElement extends View {
                 position_pressed_y = event.getY();
                 startSize_x = getWidth();
                 startSize_y = getHeight();
+                initialPinchDistance = 0f;
 
                 if (virtualController.getControllerMode() == VirtualController.ControllerMode.MoveButtons)
                     actionEnableMove();
@@ -251,7 +275,29 @@ public abstract class VirtualControllerElement extends View {
 
                 return true;
             }
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                if (event.getPointerCount() >= 2) {
+                    initialPinchDistance = (float) Math.hypot(
+                            event.getX(0) - event.getX(1),
+                            event.getY(0) - event.getY(1));
+                    pinchStartWidth = getWidth();
+                    pinchStartHeight = getHeight();
+                    actionEnableResize();
+                }
+                return true;
+            }
             case MotionEvent.ACTION_MOVE: {
+                if (event.getPointerCount() >= 2 && initialPinchDistance > 10f) {
+                    float currentDist = (float) Math.hypot(
+                            event.getX(0) - event.getX(1),
+                            event.getY(0) - event.getY(1));
+                    float scale = currentDist / initialPinchDistance;
+                    int newWidth = Math.max(20, (int) (pinchStartWidth * scale));
+                    int newHeight = Math.max(20, (int) (pinchStartHeight * scale));
+                    setElementSize(newWidth, newHeight);
+                    return true;
+                }
+
                 switch (currentMode) {
                     case Move: {
                         moveElement(
@@ -275,8 +321,13 @@ public abstract class VirtualControllerElement extends View {
                 }
                 return true;
             }
+            case MotionEvent.ACTION_POINTER_UP: {
+                initialPinchDistance = 0f;
+                return true;
+            }
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
+                initialPinchDistance = 0f;
                 actionCancel();
                 return true;
             }

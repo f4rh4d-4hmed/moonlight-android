@@ -12,7 +12,10 @@ import com.limelight.binding.input.touch.RelativeTouchContext;
 import com.limelight.binding.input.driver.UsbDriverService;
 import com.limelight.binding.input.evdev.EvdevListener;
 import com.limelight.binding.input.touch.TouchContext;
+import com.limelight.binding.input.virtual_controller.KeyboardInputListener;
+import com.limelight.binding.input.virtual_controller.MouseInputListener;
 import com.limelight.binding.input.virtual_controller.VirtualController;
+import com.limelight.binding.input.virtual_controller.WasdMouseController;
 import com.limelight.binding.video.CrashListener;
 import com.limelight.binding.video.MediaCodecDecoderRenderer;
 import com.limelight.binding.video.MediaCodecHelper;
@@ -112,6 +115,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private ControllerHandler controllerHandler;
     private KeyboardTranslator keyboardTranslator;
     private VirtualController virtualController;
+    private WasdMouseController wasdMouseController;
 
     private PreferenceConfiguration prefConfig;
     private SharedPreferences tombstonePrefs;
@@ -513,6 +517,41 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             virtualController.show();
         }
 
+        if (prefConfig.wasdMouseControls) {
+            wasdMouseController = new WasdMouseController(
+                    new MouseInputListener() {
+                        @Override
+                        public void sendMouseMove(int deltaX, int deltaY) {
+                            if (prefConfig.absoluteMouseMode) {
+                                conn.sendMouseMoveAsMousePosition((short) deltaX, (short) deltaY, (short) streamView.getWidth(), (short) streamView.getHeight());
+                            } else {
+                                conn.sendMouseMove((short) deltaX, (short) deltaY);
+                            }
+                        }
+
+                        @Override
+                        public void sendMouseButtonDown(byte button) {
+                            conn.sendMouseButtonDown(button);
+                        }
+
+                        @Override
+                        public void sendMouseButtonUp(byte button) {
+                            conn.sendMouseButtonUp(button);
+                        }
+                    },
+                    new KeyboardInputListener() {
+                        @Override
+                        public void sendKeyboardEvent(boolean buttonDown, int keyCode) {
+                            keyboardEvent(buttonDown, (short) keyCode);
+                        }
+                    },
+                    (FrameLayout) streamView.getParent(),
+                    this
+            );
+            wasdMouseController.refreshLayout();
+            wasdMouseController.show();
+        }
+
         if (prefConfig.usbDriver) {
             // Start the USB driver
             bindService(new Intent(this, UsbDriverService.class),
@@ -585,6 +624,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             // Refresh layout of OSC for possible new screen size
             virtualController.refreshLayout();
         }
+        if (wasdMouseController != null) {
+            wasdMouseController.refreshLayout();
+        }
 
         // Hide on-screen overlays in PiP mode
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -593,6 +635,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
                 if (virtualController != null) {
                     virtualController.hide();
+                }
+                if (wasdMouseController != null) {
+                    wasdMouseController.hide();
                 }
 
                 performanceOverlayView.setVisibility(View.GONE);
@@ -611,6 +656,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
                 if (virtualController != null) {
                     virtualController.show();
+                }
+                if (wasdMouseController != null) {
+                    wasdMouseController.show();
                 }
 
                 if (prefConfig.enablePerfOverlay) {
@@ -1084,6 +1132,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
         if (virtualController != null) {
             virtualController.hide();
+        }
+        if (wasdMouseController != null) {
+            wasdMouseController.hide();
         }
 
         if (conn != null) {
@@ -1997,6 +2048,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                         (virtualController.getControllerMode() == VirtualController.ControllerMode.MoveButtons ||
                          virtualController.getControllerMode() == VirtualController.ControllerMode.ResizeButtons)) {
                     // Ignore presses when the virtual controller is being configured
+                    return true;
+                }
+
+                if (wasdMouseController != null &&
+                        (wasdMouseController.getControllerMode() == VirtualController.ControllerMode.MoveButtons ||
+                         wasdMouseController.getControllerMode() == VirtualController.ControllerMode.ResizeButtons)) {
+                    // Ignore presses when the WASD/Mouse controller is being configured
                     return true;
                 }
 

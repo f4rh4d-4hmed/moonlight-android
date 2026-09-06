@@ -221,6 +221,24 @@
     <string name="dialog_title_osc_opacity">Change opacity</string>
     <string name="suffix_osc_opacity">%</string>
 
+    <string name="category_wasd_mouse_settings">Custom WASD/Mouse Controls</string>
+    <string name="title_checkbox_show_wasd_mouse_controls">Show WASD/Mouse controls</string>
+    <string name="summary_checkbox_show_wasd_mouse_controls">Show virtual keyboard WASD joystick and mouse controls overlay</string>
+    <string name="title_wasd_show_joystick">Show WASD Joystick</string>
+    <string name="summary_wasd_show_joystick">Show 8-directional WASD keyboard joystick</string>
+    <string name="title_wasd_show_mouse_pad">Show Virtual Mouse Pad</string>
+    <string name="summary_wasd_show_mouse_pad">Show touch-driven relative mouse trackpad</string>
+    <string name="title_wasd_show_left_click">Show Left Click Button</string>
+    <string name="title_wasd_show_right_click">Show Right Click Button</string>
+    <string name="title_wasd_show_middle_click">Show Middle Click Button</string>
+    <string name="title_wasd_opacity">WASD/Mouse controls opacity</string>
+    <string name="summary_wasd_opacity">Make WASD/Mouse controls more/less transparent</string>
+    <string name="title_reset_wasd_osc">Reset WASD/Mouse layout</string>
+    <string name="summary_reset_wasd_osc">Resets WASD joystick, mouse pad, and click buttons to default layout</string>
+    <string name="dialog_title_reset_wasd_osc">Reset WASD/Mouse Layout</string>
+    <string name="dialog_text_reset_wasd_osc">Are you sure you want to reset your saved WASD/Mouse controls layout?</string>
+    <string name="toast_reset_wasd_osc_success">WASD/Mouse controls reset to default</string>
+
     <string name="category_ui_settings">UI Settings</string>
     <string name="title_checkbox_enable_pip">Enable Picture-in-Picture observer mode</string>
     <string name="summary_checkbox_enable_pip">Allows the stream to be viewed (but not controlled) while multitasking</string>
