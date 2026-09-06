@@ -1,4 +1,4 @@
-﻿package com.limelight.binding.input.virtual_controller;
+package com.limelight.binding.input.virtual_controller;
 
 import android.app.AlertDialog;
 import android.content.Context;

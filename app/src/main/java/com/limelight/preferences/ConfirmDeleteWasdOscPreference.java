@@ -1,4 +1,4 @@
-﻿package com.limelight.preferences;
+package com.limelight.preferences;
 
 import android.content.Context;
 import android.content.DialogInterface;

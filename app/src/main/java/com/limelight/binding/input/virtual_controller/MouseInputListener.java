@@ -1,4 +1,4 @@
-﻿package com.limelight.binding.input.virtual_controller;
+package com.limelight.binding.input.virtual_controller;
 
 public interface MouseInputListener {
     void sendMouseMove(int deltaX, int deltaY);

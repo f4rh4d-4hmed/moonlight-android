@@ -1,4 +1,4 @@
-﻿package com.limelight.binding.input.virtual_controller;
+package com.limelight.binding.input.virtual_controller;
 
 import android.os.Handler;
 import java.util.List;
